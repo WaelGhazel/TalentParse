@@ -135,9 +135,6 @@ CV_FOLDER = "cvs"
 CACHE_DIR = "cache"
 RESULTS_CSV = "results.csv"
 
-os.makedirs(CV_FOLDER, exist_ok=True)
-os.makedirs(CACHE_DIR, exist_ok=True)
-
 LLM_MODEL = "gemma3:4b"         # Candidate & Job parsing
 MAX_WORKERS = min(8, os.cpu_count() or 4)
 ```
