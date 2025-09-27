@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>HR Candidate Matcher</title>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            background: #fdf8f2; /* very light beige */
+            color: #333333; /* dark text */
+            font-family: 'Roboto', sans-serif;
+            margin: 0;
+            padding: 0;
+        }
+
+        header {
+            text-align: center;
+            padding: 25px 20px;
+            background: linear-gradient(90deg, #f5e6d3, #d6a77a); /* soft caramel gradient */
+            color: #333;
+            font-size: 2rem;
+            font-weight: 700;
+            letter-spacing: 1px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 30px auto;
+            padding: 20px;
+        }
+
+        label {
+            font-weight: 600;
+            display: block;
+            margin-bottom: 8px;
+            font-size: 1.1rem;
+        }
+
+        textarea {
+            width: 100%;
+            height: 150px;
+            background-color: #ffffff;
+            color: #333;
+            padding: 15px;
+            border: 1px solid #ccc;
+            border-radius: 8px;
+            font-size: 1rem;
+            resize: vertical;
+            transition: border 0.3s, box-shadow 0.3s;
+        }
+
+        textarea:focus {
+            border-color: #d6a77a;
+            box-shadow: 0 0 8px rgba(214,167,122,0.3);
+            outline: none;
+        }
+
+        /* Custom file upload button */
+        input[type="file"] {
+            display: none;
+        }
+
+        .custom-file-upload {
+            display: inline-block;
+            padding: 12px 25px;
+            cursor: pointer;
+            border-radius: 8px;
+            background: linear-gradient(90deg, #f5e6d3, #d6a77a);
+            color: #333;
+            font-weight: 600;
+            transition: transform 0.2s, box-shadow 0.2s, background 0.3s;
+            text-align: center;
+        }
+
+        .custom-file-upload:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 15px rgba(0,0,0,0.1);
+            background: linear-gradient(90deg, #e9d5b7, #c99563);
+        }
+
+        .custom-file-upload::before {
+            content: "📁 ";
+        }
+
+        .file-names {
+            margin-top: 8px;
+            font-size: 0.95rem;
+            color: #a36f4c;
+        }
+
+        button {
+            display: inline-block;
+            background: linear-gradient(90deg, #f5e6d3, #d6a77a);
+            color: #333;
+            font-weight: 700;
+            padding: 12px 25px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 1rem;
+            transition: transform 0.2s, box-shadow 0.2s;
+            margin-top: 10px;
+        }
+
+        button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+
+        h2 {
+            color: #d6a77a;
+            border-bottom: 2px solid #d6a77a;
+            padding-bottom: 5px;
+            margin-top: 40px;
+        }
+
+        .candidate {
+            background-color: #ffffff;
+            padding: 20px;
+            margin: 15px 0;
+            border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        .candidate:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 20px rgba(0,0,0,0.1);
+        }
+
+        h3 {
+            color: #a36f4c;
+            margin: 0 0 10px 0;
+        }
+
+        .contact {
+            margin: 5px 0;
+            font-weight: 500;
+        }
+
+        ul {
+            margin: 5px 0;
+            padding-left: 20px;
+        }
+
+        li {
+            margin-bottom: 3px;
+        }
+    </style>
+</head>
+<body>
+    <header>HR Candidate Matcher</header>
+    <div class="container">
+        <form method="POST" enctype="multipart/form-data">
+            <label for="job_description">Job Description:</label>
+            <textarea name="job_description" placeholder="Paste your job description here...">{{ job_desc_text }}</textarea><br><br>
+
+            <label for="cv_files" class="custom-file-upload">
+                Upload CVs (PDF, DOCX, TXT)
+            </label>
+            <input type="file" name="cv_files" id="cv_files" multiple>
+            <div class="file-names" id="file-names"></div><br>
+
+            <button type="submit">Process CVs</button>
+        </form>
+
+        {% if results %}
+            <h2>Ranked Candidates</h2>
+            <a href="{{ url_for('download_csv') }}" target="_blank">
+                <button>Generate Report ✨</button>
+            </a>
+
+            {% for c in results %}
+                <div class="candidate">
+                    <h3>{{ c.first_name }} {{ c.last_name }} - Score: {{ c.score }}</h3>
+                    <div class="contact"><strong>Email:</strong> {{ c.email }}</div>
+                    <div class="contact"><strong>Phone:</strong> {{ c.phone }}</div>
+                    <div class="contact"><strong>Matching Points:</strong></div>
+                    <ul>
+                        {% for point in c.matching_points %}
+                            <li>{{ point }}</li>
+                        {% endfor %}
+                    </ul>
+                </div>
+            {% endfor %}
+        {% endif %}
+    </div>
+
+    <script>
+        const fileInput = document.getElementById('cv_files');
+        const fileNamesDiv = document.getElementById('file-names');
+
+        fileInput.addEventListener('change', () => {
+            const files = Array.from(fileInput.files).map(f => f.name).join(', ');
+            fileNamesDiv.textContent = files || '';
+        });
+    </script>
+</body>
+</html>
