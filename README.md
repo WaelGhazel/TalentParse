@@ -46,7 +46,7 @@ A **Flask web application** to extract text from CVs (PDF, DOCX, TXT), parse the
 ### 1. Clone the repository
 
 ```bash
-git clone https://github.com/YOUR_USERNAME/cv-parser.git
+git https://github.com/WaelGhazel/TalentParse
 cd cv-parser
 ```
 
